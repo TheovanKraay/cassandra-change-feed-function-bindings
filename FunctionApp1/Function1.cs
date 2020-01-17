@@ -1,4 +1,4 @@
-using Microsoft.Azure.Documents;
+using Cassandra;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,15 +14,19 @@ namespace FunctionApp1
             tableName: "table1",
             ContactPoint = "ContactPoint",
             User = "User",
-            Password = "Password")]IReadOnlyList<Document> input, ILogger log)
+            Password = "Password")]IReadOnlyList<Row> input, ILogger log)
         {
-            if (input != null && input.Count > 0)
+            if (input != null)
             {
-                log.LogInformation("Documents modified " + input.Count);
-                foreach (var doc in input)
+                if (input.Count != 0)
                 {
-                    string docstring = doc.ToString();
-                    Console.Out.WriteLine(docstring);
+                    for (int i = 0; i < input.Count; i++)
+                    {
+                        string name = input[i].GetValue<string>("name");
+                        string email = input[i].GetValue<string>("email");
+                        Console.WriteLine("name: " + name); 
+                        Console.WriteLine("email: " + email);
+                    }
                 }
             }
         }

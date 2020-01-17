@@ -169,23 +169,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDB.CassandraAPI
                     RowSet rowSet = session.Execute(changeFeedQueryStatement);
                     pageState = rowSet.PagingState;
                     if (rowSet.IsFullyFetched) {
-                        List<Row> rowList = rowSet.ToList();
+                        IReadOnlyList<Row> rowList = rowSet.ToList();
                         CqlColumn[] columns = rowSet.Columns;
                         if (rowList.Count != 0)
                         {
-                            //convert that Cassandra formatted resultset to Document in order to keep same interface contract
-                            List<Document> docs = new List<Document>();
-                            for (int i = 0; i < rowList.Count; i++)
-                            {
-                                Document doc = new Document();
-                                foreach (CqlColumn col in columns)
-                                {
-                                    doc.SetPropertyValue(col.Name, rowList[i].GetValue<dynamic>(col.Name));                                   
-                                }
-                                docs.Add(doc);
-                            }
                             //TODO: this is executed from ChangeFeed Observer in original SQL API implementation - may need to revisit
-                            await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = docs }, cancellationToken);
+                            await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = rowList }, cancellationToken);
                         }
                     }                    
                     Thread.Sleep(500);

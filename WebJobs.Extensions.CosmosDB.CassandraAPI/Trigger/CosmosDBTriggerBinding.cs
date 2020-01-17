@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using Microsoft.Azure.Documents;
+using Cassandra;
 using Microsoft.Azure.Documents.ChangeFeedProcessor;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Listeners;
@@ -73,7 +73,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDB.CassandraAPI
         /// <summary>
         /// Gets the type of the value the Trigger receives from the Executor.
         /// </summary>
-        public Type TriggerValueType => typeof(IReadOnlyList<Document>);
+        public Type TriggerValueType => typeof(IReadOnlyList<Row>);
 
         //TODO: Removed below for Cassandra API binding - may need to revisit in future.
         //internal DocumentCollectionInfo DocumentCollectionLocation => _documentCollectionLocation;
@@ -134,19 +134,19 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDB.CassandraAPI
             };
         }
 
-        internal static bool TryAndConvertToDocumentList(object value, out IReadOnlyList<Document> documents)
+        internal static bool TryAndConvertToDocumentList(object value, out IReadOnlyList<Row> documents)
         {
             documents = null;
 
             try
             {
-                if (value is IReadOnlyList<Document> docs)
+                if (value is IReadOnlyList<Row> docs)
                 {
                     documents = docs;
                 }
                 else if (value is string stringVal)
                 {
-                    documents = JsonConvert.DeserializeObject<IReadOnlyList<Document>>(stringVal);
+                    documents = JsonConvert.DeserializeObject<IReadOnlyList<Row>>(stringVal);
                 }
 
                 return documents != null;
