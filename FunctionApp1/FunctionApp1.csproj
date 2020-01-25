@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebJobs.Extensions.CosmosDB.CassandraAPI\WebJobs.Extensions.CosmosDB.CassandraAPI.csproj" />
+    <ProjectReference Include="..\WebJobs.Extensions.CosmosDBCassandra\WebJobs.Extensions.CosmosDBCassandra.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

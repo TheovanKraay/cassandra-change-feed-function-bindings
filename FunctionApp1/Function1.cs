@@ -13,6 +13,7 @@ namespace FunctionApp1
             keyspaceName: "data",
             tableName: "table1",
             ContactPoint = "ContactPoint",
+            FeedPollDelay = 500,
             User = "User",
             Password = "Password")]IReadOnlyList<Row> input, ILogger log)
         {

@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebJobs.Extensions.CosmosDB.CassandraAPI", "WebJobs.Extensions.CosmosDB.CassandraAPI\WebJobs.Extensions.CosmosDB.CassandraAPI.csproj", "{111A2AF7-F1DD-446E-A829-D25B0EE7F1C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebJobs.Extensions.CosmosDBCassandra", "WebJobs.Extensions.CosmosDBCassandra\WebJobs.Extensions.CosmosDBCassandra.csproj", "{111A2AF7-F1DD-446E-A829-D25B0EE7F1C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
