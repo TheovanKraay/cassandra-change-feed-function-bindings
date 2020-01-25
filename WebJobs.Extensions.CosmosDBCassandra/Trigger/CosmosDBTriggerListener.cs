@@ -6,7 +6,6 @@ using Cassandra.Mapping;
 using Microsoft.Azure.Documents.ChangeFeedProcessor;
 using Microsoft.Azure.Documents.ChangeFeedProcessor.Monitoring;
 using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
-//using Microsoft.Azure.WebJobs.Extensions.CosmosDB;
 using Microsoft.Azure.WebJobs.Host.Executors;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Azure.WebJobs.Host.Scale;
