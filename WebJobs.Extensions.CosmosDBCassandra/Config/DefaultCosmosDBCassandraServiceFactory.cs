@@ -3,7 +3,7 @@
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
-    internal class DefaultCosmosDBServiceFactory : ICosmosDBCassandraServiceFactory
+    internal class DefaultCosmosDBCassandraServiceFactory : ICosmosDBCassandraServiceFactory
     {
         public ICosmosDBCassandraService CreateService(string contactPoint, string user, string password)
         {
