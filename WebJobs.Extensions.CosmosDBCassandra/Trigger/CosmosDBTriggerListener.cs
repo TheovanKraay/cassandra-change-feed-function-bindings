@@ -24,7 +24,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly string _keyspace;
         private readonly string _table;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private int _listenerStatus;
         private static ISession session;
         
 

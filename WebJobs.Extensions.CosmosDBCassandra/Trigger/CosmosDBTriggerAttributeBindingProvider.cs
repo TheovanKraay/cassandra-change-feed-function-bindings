@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-//using Microsoft.Azure.Documents;
-//using Microsoft.Azure.Documents.ChangeFeedProcessor;
-//using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Triggers;
 using Microsoft.Azure.WebJobs.Logging;
@@ -25,7 +22,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly CosmosDBCassandraOptions _options;
         private readonly ILogger _logger;
         private readonly CosmosDBExtensionConfigProvider _configProvider;
-        private static ISession session;
 
 
         public CosmosDBCassandraTriggerAttributeBindingProvider(IConfiguration configuration, INameResolver nameResolver, CosmosDBCassandraOptions options,
@@ -38,7 +34,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             _logger = loggerFactory.CreateLogger(LogCategories.CreateTriggerCategory("CosmosDB"));
         }
 
-        public async Task<ITriggerBinding> TryCreateAsync(TriggerBindingProviderContext context)
+        public Task<ITriggerBinding> TryCreateAsync(TriggerBindingProviderContext context)
         {
             // Tries to parse the context parameters and see if it belongs to this [CosmosDBTrigger] binder
             if (context == null)
@@ -59,12 +55,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 
             ICosmosDBCassandraService cosmosDBCassandraService = _configProvider.GetService(contactPoint, user, password);
 
-            return new CosmosDBCassandraTriggerBinding(
+            return Task.FromResult((ITriggerBinding)new CosmosDBCassandraTriggerBinding(
                 parameter,
                 ResolveAttributeValue(attribute.KeyspaceName),
                 ResolveAttributeValue(attribute.TableName),
                 cosmosDBCassandraService,
-                _logger);
+                _logger));
         }
 
         internal string ResolveConfigurationValue(string unresolvedConnectionString, string propertyName)
