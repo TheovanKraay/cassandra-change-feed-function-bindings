@@ -7,6 +7,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
     {
         public CosmosDBAttribute ResolvedAttribute { get; set; }
 
-        public ICosmosDBService Service { get; set; }
+        //public ICosmosDBService Service { get; set; }
     }
 }

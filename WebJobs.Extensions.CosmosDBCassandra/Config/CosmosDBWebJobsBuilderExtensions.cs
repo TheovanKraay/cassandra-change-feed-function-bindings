@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.Hosting
                     section.Bind(options);
                 });
 
-            builder.Services.AddSingleton<ICosmosDBServiceFactory, DefaultCosmosDBServiceFactory>();
+            //builder.Services.AddSingleton<ICosmosDBServiceFactory, DefaultCosmosDBServiceFactory>();
 
             return builder;
         }

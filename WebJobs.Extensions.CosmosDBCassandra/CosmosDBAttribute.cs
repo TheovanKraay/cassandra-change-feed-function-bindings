@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using Microsoft.Azure.Documents;
+//using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra;
 using System;
@@ -131,6 +131,6 @@ namespace Microsoft.Azure.WebJobs
         [AutoResolve]
         public string PreferredLocations { get; set; }
 
-        internal SqlParameterCollection SqlQueryParameters { get; set; }
+        //internal SqlParameterCollection SqlQueryParameters { get; set; }
     }
 }

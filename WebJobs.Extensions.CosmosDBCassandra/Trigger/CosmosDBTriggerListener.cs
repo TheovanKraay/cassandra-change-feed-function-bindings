@@ -3,9 +3,9 @@
 
 using Cassandra;
 using Cassandra.Mapping;
-using Microsoft.Azure.Documents.ChangeFeedProcessor;
-using Microsoft.Azure.Documents.ChangeFeedProcessor.Monitoring;
-using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
+//using Microsoft.Azure.Documents.ChangeFeedProcessor;
+//using Microsoft.Azure.Documents.ChangeFeedProcessor.Monitoring;
+//using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
 using Microsoft.Azure.WebJobs.Host.Executors;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Azure.WebJobs.Host.Scale;
@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
     //internal class CosmosDBTriggerListener : IListener, IScaleMonitor<CosmosDBTriggerMetrics>, Microsoft.Azure.Documents.ChangeFeedProcessor.FeedProcessing.IChangeFeedObserverFactory
-    internal class CosmosDBTriggerListener : IListener, Microsoft.Azure.Documents.ChangeFeedProcessor.FeedProcessing.IChangeFeedObserverFactory
+    internal class CosmosDBTriggerListener : IListener
     {
         private const int ListenerNotRegistered = 0;
         private const int ListenerRegistering = 1;
@@ -31,17 +31,17 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 
         private readonly ITriggeredFunctionExecutor _executor;
         private readonly ILogger _logger;
-        private readonly DocumentCollectionInfo _monitorCollection;
-        private readonly DocumentCollectionInfo _leaseCollection;
+        //private readonly DocumentCollectionInfo _monitorCollection;
+        //private readonly DocumentCollectionInfo _leaseCollection;
         private readonly string _hostName;
-        private readonly ChangeFeedProcessorOptions _processorOptions;
-        private readonly ICosmosDBService _monitoredCosmosDBService;
-        private readonly ICosmosDBService _leasesCosmosDBService;
-        private readonly IHealthMonitor _healthMonitor;
-        private IChangeFeedProcessor _host;
-        private ChangeFeedProcessorBuilder _hostBuilder;
-        private ChangeFeedProcessorBuilder _workEstimatorBuilder;
-        private IRemainingWorkEstimator _workEstimator;
+        //private readonly ChangeFeedProcessorOptions _processorOptions;
+        //private readonly ICosmosDBService _monitoredCosmosDBService;
+        //private readonly ICosmosDBService _leasesCosmosDBService;
+        //private readonly IHealthMonitor _healthMonitor;
+        //private IChangeFeedProcessor _host;
+        //private ChangeFeedProcessorBuilder _hostBuilder;
+        //private ChangeFeedProcessorBuilder _workEstimatorBuilder;
+        //private IRemainingWorkEstimator _workEstimator;
         private int _listenerStatus;
         private string _functionId;
         private string _keyspace;
@@ -77,12 +77,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             //TODO: Removed below for Cassandra API binding
             //DocumentCollectionInfo documentCollectionLocation,
             //DocumentCollectionInfo leaseCollectionLocation,
-            ChangeFeedProcessorOptions processorOptions,
+            //ChangeFeedProcessorOptions processorOptions,
             //TODO: Removed below for Cassandra API binding - may need to revisit in future for scale tolerance.
             //ICosmosDBService monitoredCosmosDBService,
             //ICosmosDBService leasesCosmosDBService,
-            ILogger logger,
-            IRemainingWorkEstimator workEstimator = null)
+            ILogger logger)
         {
             this._logger = logger;
             this._executor = executor;
@@ -98,15 +97,15 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             //this._monitorCollection = documentCollectionLocation;
             //this._leaseCollection = leaseCollectionLocation;
 
-            this._processorOptions = processorOptions;
+            //this._processorOptions = processorOptions;
 
             //TODO: Removed below for Cassandra API binding - may need to revisit in future.
             //this._monitoredCosmosDBService = monitoredCosmosDBService;
             //this._leasesCosmosDBService = leasesCosmosDBService;
 
-            this._healthMonitor = new CosmosDBTriggerHealthMonitor(this._logger);
+            //this._healthMonitor = new CosmosDBTriggerHealthMonitor(this._logger);
 
-            this._workEstimator = workEstimator;
+            //this._workEstimator = workEstimator;
 
             //TODO: Removed below for Cassandra API binding - may need to revisit in future.
             //this._scaleMonitorDescriptor = new ScaleMonitorDescriptor($"{_functionId}-CosmosDBTrigger-{_monitorCollection.DatabaseName}-{_monitorCollection.CollectionName}".ToLower());
@@ -125,10 +124,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             this.StopAsync(CancellationToken.None).Wait();
         }
 
-        public Microsoft.Azure.Documents.ChangeFeedProcessor.FeedProcessing.IChangeFeedObserver CreateObserver()
-        {
-            return new CosmosDBTriggerObserver(this._executor);
-        }
+        //public Microsoft.Azure.Documents.ChangeFeedProcessor.FeedProcessing.IChangeFeedObserver CreateObserver()
+        //{
+        //    return new CosmosDBTriggerObserver(this._executor);
+        //}
 
         public void Dispose()
         {
@@ -176,10 +175,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                     }
 
                     TimeSpan wait = new TimeSpan(5000);
-                    if (_processorOptions.FeedPollDelay != null)
-                    {
-                        wait = _processorOptions.FeedPollDelay;
-                    }
+                    //if (_processorOptions.FeedPollDelay != null)
+                    //{
+                    //    wait = _processorOptions.FeedPollDelay;
+                    //}
                     Thread.Sleep(wait);
                 }
                 catch (Exception e)
@@ -193,11 +192,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         {
             try
             {
-                if (this._host != null)
-                {
-                    await this._host.StopAsync().ConfigureAwait(false);
-                    this._listenerStatus = ListenerNotRegistered;
-                }
+                //if (this._host != null)
+                //{
+                //    await this._host.StopAsync().ConfigureAwait(false);
+                //    this._listenerStatus = ListenerNotRegistered;
+                //}
             }
             catch (Exception ex)
             {
@@ -208,54 +207,54 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 
         internal virtual async Task StartProcessorAsync()
         {
-            if (this._host == null)
-            {
-                this._host = await this._hostBuilder.BuildAsync().ConfigureAwait(false);
-            }
+            //if (this._host == null)
+            //{
+            //    this._host = await this._hostBuilder.BuildAsync().ConfigureAwait(false);
+            //}
 
-            await this._host.StartAsync().ConfigureAwait(false);
+            //await this._host.StartAsync().ConfigureAwait(false);
         }
 
-        private void InitializeBuilder()
-        {
-            //TODO: the current processing in StartAsync needs to be integrated into a change feed 
-            //processor, per similar approach below for SQL API, in order to be scale tolerant. Below code is redundant.
-            if (this._hostBuilder == null)
-            {
-                this._hostBuilder = new ChangeFeedProcessorBuilder()
-                    .WithHostName(this._hostName)
-                    .WithFeedDocumentClient(this._monitoredCosmosDBService.GetClient())
-                    .WithLeaseDocumentClient(this._leasesCosmosDBService.GetClient())
-                    .WithFeedCollection(this._monitorCollection)
-                    .WithLeaseCollection(this._leaseCollection)
-                    .WithProcessorOptions(this._processorOptions)
-                    .WithHealthMonitor(this._healthMonitor)
-                    .WithObserverFactory(this);
-            }
-        }
+        //private void InitializeBuilder()
+        //{
+        //    //TODO: the current processing in StartAsync needs to be integrated into a change feed 
+        //    //processor, per similar approach below for SQL API, in order to be scale tolerant. Below code is redundant.
+        //    if (this._hostBuilder == null)
+        //    {
+        //        this._hostBuilder = new ChangeFeedProcessorBuilder()
+        //            .WithHostName(this._hostName)
+        //            .WithFeedDocumentClient(this._monitoredCosmosDBService.GetClient())
+        //            .WithLeaseDocumentClient(this._leasesCosmosDBService.GetClient())
+        //            .WithFeedCollection(this._monitorCollection)
+        //            .WithLeaseCollection(this._leaseCollection)
+        //            .WithProcessorOptions(this._processorOptions)
+        //            .WithHealthMonitor(this._healthMonitor)
+        //            .WithObserverFactory(this);
+        //    }
+        //}
 
-        private async Task<IRemainingWorkEstimator> GetWorkEstimatorAsync()
-        {
-            if (_workEstimatorBuilder == null)
-            {
-                _workEstimatorBuilder = new ChangeFeedProcessorBuilder()
-                    .WithHostName(this._hostName)
-                    .WithFeedDocumentClient(this._monitoredCosmosDBService.GetClient())
-                    .WithLeaseDocumentClient(this._leasesCosmosDBService.GetClient())
-                    .WithFeedCollection(this._monitorCollection)
-                    .WithLeaseCollection(this._leaseCollection)
-                    .WithProcessorOptions(this._processorOptions)
-                    .WithHealthMonitor(this._healthMonitor)
-                    .WithObserverFactory(this);
-            }
+        //private async Task<IRemainingWorkEstimator> GetWorkEstimatorAsync()
+        //{
+        //    if (_workEstimatorBuilder == null)
+        //    {
+        //        _workEstimatorBuilder = new ChangeFeedProcessorBuilder()
+        //            .WithHostName(this._hostName)
+        //            .WithFeedDocumentClient(this._monitoredCosmosDBService.GetClient())
+        //            .WithLeaseDocumentClient(this._leasesCosmosDBService.GetClient())
+        //            .WithFeedCollection(this._monitorCollection)
+        //            .WithLeaseCollection(this._leaseCollection)
+        //            .WithProcessorOptions(this._processorOptions)
+        //            .WithHealthMonitor(this._healthMonitor)
+        //            .WithObserverFactory(this);
+        //    }
 
-            if (_workEstimator == null)
-            {
-                _workEstimator = await _workEstimatorBuilder.BuildEstimatorAsync();
-            }
+        //    if (_workEstimator == null)
+        //    {
+        //        _workEstimator = await _workEstimatorBuilder.BuildEstimatorAsync();
+        //    }
 
-            return _workEstimator;
-        }
+        //    return _workEstimator;
+        //}
 
         //async Task<ScaleMetrics> IScaleMonitor.GetMetricsAsync()
         //{

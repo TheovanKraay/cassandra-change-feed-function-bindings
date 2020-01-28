@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-using Microsoft.Azure.Documents.ChangeFeedProcessor;
+//using Microsoft.Azure.Documents.ChangeFeedProcessor;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Azure.WebJobs.Host.Protocols;
@@ -27,7 +27,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         //TODO: Removed below for Cassandra API binding
         //private readonly DocumentCollectionInfo _documentCollectionLocation;
         //private readonly DocumentCollectionInfo _leaseCollectionLocation;
-        private readonly ChangeFeedProcessorOptions _processorOptions;
+        //private readonly ChangeFeedProcessorOptions _processorOptions;
         private readonly ILogger _logger;
         private readonly IReadOnlyDictionary<string, Type> _emptyBindingContract = new Dictionary<string, Type>();
         private readonly IReadOnlyDictionary<string, object> _emptyBindingData = new Dictionary<string, object>();
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             //TODO: Removed below for Cassandra API binding
             //DocumentCollectionInfo documentCollectionLocation,
             //DocumentCollectionInfo leaseCollectionLocation,
-            ChangeFeedProcessorOptions processorOptions,
+            //ChangeFeedProcessorOptions processorOptions,
             //TODO: Removed below for Cassandra API binding - may need to revisit in future.
             //ICosmosDBService monitoredCosmosDBService,
             //ICosmosDBService leasesCosmosDBService,
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             //_documentCollectionLocation = documentCollectionLocation;
             //_leaseCollectionLocation = leaseCollectionLocation;
 
-            _processorOptions = processorOptions;
+            //_processorOptions = processorOptions;
             _parameter = parameter;
             _logger = logger;
 
@@ -79,7 +79,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         //internal DocumentCollectionInfo DocumentCollectionLocation => _documentCollectionLocation;
         //internal DocumentCollectionInfo LeaseCollectionLocation => _leaseCollectionLocation;
 
-        internal ChangeFeedProcessorOptions ChangeFeedProcessorOptions => _processorOptions;
+        //internal ChangeFeedProcessorOptions ChangeFeedProcessorOptions => _processorOptions;
 
         public IReadOnlyDictionary<string, Type> BindingDataContract
         {
@@ -111,7 +111,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 //TODO: Removed below for Cassandra API binding
                 //this._documentCollectionLocation,
                 //this._leaseCollectionLocation,
-                this._processorOptions,
+                //this._processorOptions,
                 //TODO: Removed below for Cassandra API binding - may need to revisit in future.
                 //this._monitoredCosmosDBService,
                 //this._leasesCosmosDBService,

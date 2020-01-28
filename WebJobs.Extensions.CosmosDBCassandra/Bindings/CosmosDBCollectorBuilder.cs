@@ -3,19 +3,19 @@
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra.Bindings
 {
-    internal class CosmosDBCollectorBuilder<T> : IConverter<CosmosDBAttribute, IAsyncCollector<T>>
-    {
-        private readonly CosmosDBExtensionConfigProvider _configProvider;
+    //internal class CosmosDBCollectorBuilder<T> : IConverter<CosmosDBAttribute, IAsyncCollector<T>>
+    //{
+    //    private readonly CosmosDBExtensionConfigProvider _configProvider;
 
-        public CosmosDBCollectorBuilder(CosmosDBExtensionConfigProvider configProvider)
-        {
-            _configProvider = configProvider;
-        }
+    //    public CosmosDBCollectorBuilder(CosmosDBExtensionConfigProvider configProvider)
+    //    {
+    //        _configProvider = configProvider;
+    //    }
 
-        public IAsyncCollector<T> Convert(CosmosDBAttribute attribute)
-        {
-            CosmosDBContext context = _configProvider.CreateContext(attribute);
-            return new CosmosDBAsyncCollector<T>(context);
-        }
-    }
+    //    //public IAsyncCollector<T> Convert(CosmosDBAttribute attribute)
+    //    //{
+    //    //    CosmosDBContext context = _configProvider.CreateContext(attribute);
+    //    //    return new CosmosDBAsyncCollector<T>(context);
+    //    //}
+    //}
 }

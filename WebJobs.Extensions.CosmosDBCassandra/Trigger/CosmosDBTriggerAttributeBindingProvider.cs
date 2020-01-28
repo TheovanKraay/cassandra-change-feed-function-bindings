@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.ChangeFeedProcessor;
-using Microsoft.Azure.Documents.Client;
+//using Microsoft.Azure.Documents;
+//using Microsoft.Azure.Documents.ChangeFeedProcessor;
+//using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Triggers;
 using Microsoft.Azure.WebJobs.Logging;
@@ -56,17 +56,17 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 return null;
             }
 
-            ConnectionMode? desiredConnectionMode = _options.ConnectionMode;
-            Protocol? desiredConnectionProtocol = _options.Protocol;
+            //ConnectionMode? desiredConnectionMode = _options.ConnectionMode;
+            //Protocol? desiredConnectionProtocol = _options.Protocol;
 
             //DocumentCollectionInfo documentCollectionLocation;
             //DocumentCollectionInfo leaseCollectionLocation;
-            ChangeFeedProcessorOptions processorOptions = BuildProcessorOptions(attribute);
-            processorOptions.StartFromBeginning = attribute.StartFromBeginning;
-            if (attribute.MaxItemsPerInvocation > 0)
-            {
-                processorOptions.MaxItemCount = attribute.MaxItemsPerInvocation;
-            }
+            //ChangeFeedProcessorOptions processorOptions = BuildProcessorOptions(attribute);
+            //processorOptions.StartFromBeginning = attribute.StartFromBeginning;
+            //if (attribute.MaxItemsPerInvocation > 0)
+            //{
+            //    processorOptions.MaxItemCount = attribute.MaxItemsPerInvocation;
+            //}
 
             //TODO: for SQL API, adding Cosmos DB connection details was done here. 
             //Here it is disabled as we add a Cassandra Cluster session in Trigger Listener instead
@@ -183,7 +183,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 Environment.GetEnvironmentVariable(attribute.Password),
                 //documentCollectionLocation,
                 //leaseCollectionLocation,
-                processorOptions,
+                //processorOptions,
                 //TODO: for SQL API, used monitoring and lease collection. Removed for Cassandra binding - need to revisit in future.
                 //monitoredCosmosDBService,
                 //leaseCosmosDBService,
@@ -205,17 +205,17 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             return TimeSpan.FromMilliseconds(attributeValue.Value);
         }
 
-        private static async Task CreateLeaseCollectionIfNotExistsAsync(ICosmosDBService leaseCosmosDBService, string databaseName, string collectionName, int throughput)
-        {
-            try
-            {
-                await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, null, throughput);
-            }
-            catch (DocumentClientException ex) when (ex.Message.Contains(SharedThroughputRequirementException))
-            {
-                await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, LeaseCollectionRequiredPartitionKey, throughput);
-            }
-        }
+        //private static async Task CreateLeaseCollectionIfNotExistsAsync(ICosmosDBService leaseCosmosDBService, string databaseName, string collectionName, int throughput)
+        //{
+        //    try
+        //    {
+        //        await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, null, throughput);
+        //    }
+        //    catch (DocumentClientException ex) when (ex.Message.Contains(SharedThroughputRequirementException))
+        //    {
+        //        await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, LeaseCollectionRequiredPartitionKey, throughput);
+        //    }
+        //}
 
 
         //TODO: Removed below for Cassandra API binding - may need to revisit in future.
@@ -284,32 +284,32 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             return _options.ConnectionString;
         }
 
-        private ChangeFeedProcessorOptions BuildProcessorOptions(CosmosDBCassandraTriggerAttribute attribute)
-        {
-            ChangeFeedHostOptions leasesOptions = _options.LeaseOptions;
+        //private ChangeFeedProcessorOptions BuildProcessorOptions(CosmosDBCassandraTriggerAttribute attribute)
+        //{
+        //    ChangeFeedHostOptions leasesOptions = _options.LeaseOptions;
 
-            ChangeFeedProcessorOptions processorOptions = new ChangeFeedProcessorOptions
-            {
-                LeasePrefix = ResolveAttributeValue(attribute.LeaseCollectionPrefix) ?? leasesOptions.LeasePrefix,
-                FeedPollDelay = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.FeedPollDelay), leasesOptions.FeedPollDelay, attribute.FeedPollDelay),
-                LeaseAcquireInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseAcquireInterval), leasesOptions.LeaseAcquireInterval, attribute.LeaseAcquireInterval),
-                LeaseExpirationInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseExpirationInterval), leasesOptions.LeaseExpirationInterval, attribute.LeaseExpirationInterval),
-                LeaseRenewInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseRenewInterval), leasesOptions.LeaseRenewInterval, attribute.LeaseRenewInterval),
-                CheckpointFrequency = leasesOptions.CheckpointFrequency ?? new CheckpointFrequency()
-            };
+        //    ChangeFeedProcessorOptions processorOptions = new ChangeFeedProcessorOptions
+        //    {
+        //        LeasePrefix = ResolveAttributeValue(attribute.LeaseCollectionPrefix) ?? leasesOptions.LeasePrefix,
+        //        FeedPollDelay = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.FeedPollDelay), leasesOptions.FeedPollDelay, attribute.FeedPollDelay),
+        //        LeaseAcquireInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseAcquireInterval), leasesOptions.LeaseAcquireInterval, attribute.LeaseAcquireInterval),
+        //        LeaseExpirationInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseExpirationInterval), leasesOptions.LeaseExpirationInterval, attribute.LeaseExpirationInterval),
+        //        LeaseRenewInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseRenewInterval), leasesOptions.LeaseRenewInterval, attribute.LeaseRenewInterval),
+        //        CheckpointFrequency = leasesOptions.CheckpointFrequency ?? new CheckpointFrequency()
+        //    };
 
-            if (attribute.CheckpointInterval > 0)
-            {
-                processorOptions.CheckpointFrequency.TimeInterval = TimeSpan.FromMilliseconds(attribute.CheckpointInterval);
-            }
+        //    if (attribute.CheckpointInterval > 0)
+        //    {
+        //        processorOptions.CheckpointFrequency.TimeInterval = TimeSpan.FromMilliseconds(attribute.CheckpointInterval);
+        //    }
 
-            if (attribute.CheckpointDocumentCount > 0)
-            {
-                processorOptions.CheckpointFrequency.ProcessedDocumentCount = attribute.CheckpointDocumentCount;
-            }
+        //    if (attribute.CheckpointDocumentCount > 0)
+        //    {
+        //        processorOptions.CheckpointFrequency.ProcessedDocumentCount = attribute.CheckpointDocumentCount;
+        //    }
 
-            return processorOptions;
-        }
+        //    return processorOptions;
+        //}
 
         public static bool ValidateServerCertificate(
             object sender,

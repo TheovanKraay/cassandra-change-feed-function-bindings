@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-using Microsoft.Azure.Documents.Client;
+//using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs.Description;
 using Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra.Bindings;
 using Microsoft.Azure.WebJobs.Host.Bindings;
@@ -10,9 +10,7 @@ using Microsoft.Azure.WebJobs.Host.Config;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
@@ -24,21 +22,21 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
     internal class CosmosDBExtensionConfigProvider : IExtensionConfigProvider
     {
         private readonly IConfiguration _configuration;
-        private readonly ICosmosDBServiceFactory _cosmosDBServiceFactory;
+        //private readonly ICosmosDBServiceFactory _cosmosDBServiceFactory;
         private readonly INameResolver _nameResolver;
         private readonly CosmosDBOptions _options;
         private readonly ILoggerFactory _loggerFactory;
 
-        public CosmosDBExtensionConfigProvider(IOptions<CosmosDBOptions> options, ICosmosDBServiceFactory cosmosDBServiceFactory, IConfiguration configuration, INameResolver nameResolver, ILoggerFactory loggerFactory)
+        public CosmosDBExtensionConfigProvider(IOptions<CosmosDBOptions> options,  IConfiguration configuration, INameResolver nameResolver, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
-            _cosmosDBServiceFactory = cosmosDBServiceFactory;
+            //_cosmosDBServiceFactory = cosmosDBServiceFactory;
             _nameResolver = nameResolver;
             _options = options.Value;
             _loggerFactory = loggerFactory;
         }
 
-        internal ConcurrentDictionary<string, ICosmosDBService> ClientCache { get; } = new ConcurrentDictionary<string, ICosmosDBService>();
+        //internal ConcurrentDictionary<string, ICosmosDBService> ClientCache { get; } = new ConcurrentDictionary<string, ICosmosDBService>();
 
         /// <inheritdoc />
         public void Initialize(ExtensionConfigContext context)
@@ -51,16 +49,16 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             // Apply ValidateConnection to all on this rule. 
             var rule = context.AddBindingRule<CosmosDBAttribute>();
             rule.AddValidator(ValidateConnection);
-            rule.BindToCollector<DocumentOpenType>(typeof(CosmosDBCollectorBuilder<>), this);
+            //rule.BindToCollector<DocumentOpenType>(typeof(CosmosDBCollectorBuilder<>), this);
 
-            rule.BindToInput<DocumentClient>(new CosmosDBClientBuilder(this));
+            //rule.BindToInput<DocumentClient>(new CosmosDBClientBuilder(this));
 
             // Enumerable inputs
-            rule.WhenIsNull(nameof(CosmosDBAttribute.Id))
-                .BindToInput<JArray>(typeof(CosmosDBJArrayBuilder), this);
+            //rule.WhenIsNull(nameof(CosmosDBAttribute.Id))
+            //    .BindToInput<JArray>(typeof(CosmosDBJArrayBuilder), this);
 
-            rule.WhenIsNull(nameof(CosmosDBAttribute.Id))
-                .BindToInput<IEnumerable<DocumentOpenType>>(typeof(CosmosDBEnumerableBuilder<>), this);
+            //rule.WhenIsNull(nameof(CosmosDBAttribute.Id))
+            //    .BindToInput<IEnumerable<DocumentOpenType>>(typeof(CosmosDBEnumerableBuilder<>), this);
 
             // Single input
             //rule.WhenIsNotNull(nameof(CosmosDBAttribute.Id))
@@ -87,13 +85,13 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             }
         }
 
-        internal DocumentClient BindForClient(CosmosDBAttribute attribute)
-        {
-            string resolvedConnectionString = ResolveConnectionString(attribute.ConnectionStringSetting);
-            ICosmosDBService service = GetService(resolvedConnectionString, attribute.PreferredLocations, attribute.UseMultipleWriteLocations, attribute.UseDefaultJsonSerialization);
+        //internal DocumentClient BindForClient(CosmosDBAttribute attribute)
+        //{
+        //    string resolvedConnectionString = ResolveConnectionString(attribute.ConnectionStringSetting);
+        //    ICosmosDBService service = GetService(resolvedConnectionString, attribute.PreferredLocations, attribute.UseMultipleWriteLocations, attribute.UseDefaultJsonSerialization);
 
-            return service.GetClient();
-        }
+        //    return service.GetClient();
+        //}
 
         //internal Task<IValueBinder> BindForItemAsync(CosmosDBAttribute attribute, Type type)
         //{
@@ -122,25 +120,25 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             return _options.ConnectionString;
         }
 
-        internal ICosmosDBService GetService(string connectionString, string preferredLocations = "", bool useMultipleWriteLocations = false, bool useDefaultJsonSerialization = false)
-        {
-            string cacheKey = BuildCacheKey(connectionString, preferredLocations, useMultipleWriteLocations, useDefaultJsonSerialization);
-            ConnectionPolicy connectionPolicy = CosmosDBUtility.BuildConnectionPolicy(_options.ConnectionMode, _options.Protocol, preferredLocations, useMultipleWriteLocations);
-            return ClientCache.GetOrAdd(cacheKey, (c) => _cosmosDBServiceFactory.CreateService(connectionString, connectionPolicy, useDefaultJsonSerialization));
-        }
+        //internal ICosmosDBService GetService(string connectionString, string preferredLocations = "", bool useMultipleWriteLocations = false, bool useDefaultJsonSerialization = false)
+        //{
+        //    string cacheKey = BuildCacheKey(connectionString, preferredLocations, useMultipleWriteLocations, useDefaultJsonSerialization);
+        //    ConnectionPolicy connectionPolicy = CosmosDBUtility.BuildConnectionPolicy(_options.ConnectionMode, _options.Protocol, preferredLocations, useMultipleWriteLocations);
+        //    return ClientCache.GetOrAdd(cacheKey, (c) => _cosmosDBServiceFactory.CreateService(connectionString, connectionPolicy, useDefaultJsonSerialization));
+        //}
 
-        internal CosmosDBContext CreateContext(CosmosDBAttribute attribute)
-        {
-            string resolvedConnectionString = ResolveConnectionString(attribute.ConnectionStringSetting);
+        //internal CosmosDBContext CreateContext(CosmosDBAttribute attribute)
+        //{
+        //    string resolvedConnectionString = ResolveConnectionString(attribute.ConnectionStringSetting);
 
-            ICosmosDBService service = GetService(resolvedConnectionString, attribute.PreferredLocations, attribute.UseMultipleWriteLocations, attribute.UseDefaultJsonSerialization);
+        //    ICosmosDBService service = GetService(resolvedConnectionString, attribute.PreferredLocations, attribute.UseMultipleWriteLocations, attribute.UseDefaultJsonSerialization);
 
-            return new CosmosDBContext
-            {
-                Service = service,
-                ResolvedAttribute = attribute,
-            };
-        }
+        //    return new CosmosDBContext
+        //    {
+        //        Service = service,
+        //        ResolvedAttribute = attribute,
+        //    };
+        //}
 
         internal static bool IsSupportedEnumerable(Type type)
         {
