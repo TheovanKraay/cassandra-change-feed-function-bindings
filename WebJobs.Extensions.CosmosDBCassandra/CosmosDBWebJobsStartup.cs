@@ -14,7 +14,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         public void Configure(IWebJobsBuilder builder)
         {
             
-            builder.AddCosmosDB();
+            builder.AddCosmosDBCassandra();
 
         }
     }

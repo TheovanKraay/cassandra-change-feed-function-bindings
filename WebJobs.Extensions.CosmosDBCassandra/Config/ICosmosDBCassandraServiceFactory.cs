@@ -3,10 +3,8 @@
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
-    internal class CosmosDBContext
+    internal interface ICosmosDBCassandraServiceFactory
     {
-        public CosmosDBAttribute ResolvedAttribute { get; set; }
-
-        //public ICosmosDBService Service { get; set; }
+        ICosmosDBCassandraService CreateService(string contactPoint, string user, string password);
     }
 }

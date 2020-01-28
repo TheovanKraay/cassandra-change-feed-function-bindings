@@ -3,13 +3,13 @@
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
-    internal static class CosmosDBTriggerConstants
+    internal static class CosmosDBCassandraTriggerConstants
     {
         public const string DefaultLeaseCollectionName = "leases";
 
-        public const string TriggerName = "CosmosDBTrigger";
+        public const string TriggerName = "CosmosDBCassandraTrigger";
 
-        public const string TriggerDescription = "New changes on keyspace {0} at {1}";
+        public const string TriggerDescription = "New changes on keyspace {0} table {1} at {2}";
 
         public const string InvokeString = "{0} changes detected.";
     }

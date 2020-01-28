@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.Hosting
         /// Adds the CosmosDB extension to the provided <see cref="IWebJobsBuilder"/>.
         /// </summary>
         /// <param name="builder">The <see cref="IWebJobsBuilder"/> to configure.</param>
-        public static IWebJobsBuilder AddCosmosDB(this IWebJobsBuilder builder)
+        public static IWebJobsBuilder AddCosmosDBCassandra(this IWebJobsBuilder builder)
         {
             if (builder == null)
             {
@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.Hosting
             }
 
             builder.AddExtension<CosmosDBExtensionConfigProvider>()
-                .ConfigureOptions<CosmosDBOptions>((config, path, options) =>
+                .ConfigureOptions<CosmosDBCassandraOptions>((config, path, options) =>
                 {
                     options.ConnectionString = config.GetConnectionString(Constants.DefaultConnectionStringName);
 
@@ -34,30 +34,7 @@ namespace Microsoft.Extensions.Hosting
                     section.Bind(options);
                 });
 
-            //builder.Services.AddSingleton<ICosmosDBServiceFactory, DefaultCosmosDBServiceFactory>();
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds the CosmosDB extension to the provided <see cref="IWebJobsBuilder"/>.
-        /// </summary>
-        /// <param name="builder">The <see cref="IWebJobsBuilder"/> to configure.</param>
-        /// <param name="configure">An <see cref="Action{CosmosDBOptions}"/> to configure the provided <see cref="CosmosDBOptions"/>.</param>
-        public static IWebJobsBuilder AddCosmosDB(this IWebJobsBuilder builder, Action<CosmosDBOptions> configure)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
-
-            builder.AddCosmosDB();
-            builder.Services.Configure(configure);
+            builder.Services.AddSingleton<ICosmosDBCassandraServiceFactory, DefaultCosmosDBServiceFactory>();
 
             return builder;
         }

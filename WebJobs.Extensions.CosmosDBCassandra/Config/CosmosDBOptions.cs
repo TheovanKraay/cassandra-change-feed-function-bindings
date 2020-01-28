@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
-    public class CosmosDBOptions : IOptionsFormatter
+    public class CosmosDBCassandraOptions : IOptionsFormatter
     {
         /// <summary>
         /// Gets or sets the CosmosDB connection string.
