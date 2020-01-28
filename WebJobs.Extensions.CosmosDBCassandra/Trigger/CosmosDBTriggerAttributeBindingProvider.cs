@@ -181,6 +181,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 Environment.GetEnvironmentVariable(attribute.ContactPoint),
                 Environment.GetEnvironmentVariable(attribute.User),
                 Environment.GetEnvironmentVariable(attribute.Password),
+                attribute.FeedPollDelay,
                 //documentCollectionLocation,
                 //leaseCollectionLocation,
                 //processorOptions,

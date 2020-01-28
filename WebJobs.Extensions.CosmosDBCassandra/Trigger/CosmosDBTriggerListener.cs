@@ -49,6 +49,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private string _contactpoint;
         private string _user;
         private string _password;
+        private int _feedpolldelay;
         private ScaleMonitorDescriptor _scaleMonitorDescriptor;
         private static ISession session;
 
@@ -74,6 +75,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             string contactpoint,
             string username,
             string password,
+            int feedpolldelay,
             //TODO: Removed below for Cassandra API binding
             //DocumentCollectionInfo documentCollectionLocation,
             //DocumentCollectionInfo leaseCollectionLocation,
@@ -91,6 +93,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             this._contactpoint = contactpoint;
             this._user = username;
             this._password = password;
+            this._feedpolldelay = feedpolldelay;
             this._hostName = Guid.NewGuid().ToString();
 
             //TODO: Removed below for Cassandra API binding - may need to revisit in future.
@@ -175,10 +178,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                     }
 
                     TimeSpan wait = new TimeSpan(5000);
-                    //if (_processorOptions.FeedPollDelay != null)
-                    //{
-                    //    wait = _processorOptions.FeedPollDelay;
-                    //}
+                    if (_feedpolldelay != 0)
+                    {
+                        wait = new TimeSpan(_feedpolldelay);
+                    }
                     Thread.Sleep(wait);
                 }
                 catch (Exception e)

@@ -24,6 +24,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly string _contactpoint;
         private readonly string _user;
         private readonly string _password;
+        private readonly int _feedpolldelay;
         //TODO: Removed below for Cassandra API binding
         //private readonly DocumentCollectionInfo _documentCollectionLocation;
         //private readonly DocumentCollectionInfo _leaseCollectionLocation;
@@ -42,6 +43,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             string contactpoint, 
             string user, 
             string password,
+            int feedpolldelay,
             //TODO: Removed below for Cassandra API binding
             //DocumentCollectionInfo documentCollectionLocation,
             //DocumentCollectionInfo leaseCollectionLocation,
@@ -56,6 +58,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             _contactpoint = contactpoint;
             _user = user;
             _password = password;
+            _feedpolldelay = feedpolldelay;
 
             //TODO: Removed below for Cassandra API binding
             //_documentCollectionLocation = documentCollectionLocation;
@@ -108,6 +111,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 this._contactpoint,
                 this._user,
                 this._password,
+                this._feedpolldelay,
                 //TODO: Removed below for Cassandra API binding
                 //this._documentCollectionLocation,
                 //this._leaseCollectionLocation,
