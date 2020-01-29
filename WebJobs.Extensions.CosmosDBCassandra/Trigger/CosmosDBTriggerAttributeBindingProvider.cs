@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-//using Microsoft.Azure.Documents;
-//using Microsoft.Azure.Documents.ChangeFeedProcessor;
-//using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Triggers;
 using Microsoft.Azure.WebJobs.Logging;
@@ -20,18 +17,14 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
     internal class CosmosDBCassandraTriggerAttributeBindingProvider : ITriggerBindingProvider
     {
-        private const string CosmosDBTriggerUserAgentSuffix = "CosmosDBTriggerFunctions";
-        private const string SharedThroughputRequirementException = "Shared throughput collection should have a partition key";
-        private const string LeaseCollectionRequiredPartitionKey = "/id";
         private readonly IConfiguration _configuration;
         private readonly INameResolver _nameResolver;
-        private readonly CosmosDBOptions _options;
+        private readonly CosmosDBCassandraOptions _options;
         private readonly ILogger _logger;
         private readonly CosmosDBExtensionConfigProvider _configProvider;
-        private static ISession session;
 
 
-        public CosmosDBCassandraTriggerAttributeBindingProvider(IConfiguration configuration, INameResolver nameResolver, CosmosDBOptions options,
+        public CosmosDBCassandraTriggerAttributeBindingProvider(IConfiguration configuration, INameResolver nameResolver, CosmosDBCassandraOptions options,
             CosmosDBExtensionConfigProvider configProvider, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
@@ -41,7 +34,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             _logger = loggerFactory.CreateLogger(LogCategories.CreateTriggerCategory("CosmosDB"));
         }
 
-        public async Task<ITriggerBinding> TryCreateAsync(TriggerBindingProviderContext context)
+        public Task<ITriggerBinding> TryCreateAsync(TriggerBindingProviderContext context)
         {
             // Tries to parse the context parameters and see if it belongs to this [CosmosDBTrigger] binder
             if (context == null)
@@ -56,217 +49,23 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 return null;
             }
 
-            //ConnectionMode? desiredConnectionMode = _options.ConnectionMode;
-            //Protocol? desiredConnectionProtocol = _options.Protocol;
+            string contactPoint = ResolveConfigurationValue(attribute.ContactPoint, nameof(attribute.ContactPoint));
+            string user = ResolveConfigurationValue(attribute.User, nameof(attribute.User));
+            string password = ResolveConfigurationValue(attribute.Password, nameof(attribute.Password));
 
-            //DocumentCollectionInfo documentCollectionLocation;
-            //DocumentCollectionInfo leaseCollectionLocation;
-            //ChangeFeedProcessorOptions processorOptions = BuildProcessorOptions(attribute);
-            //processorOptions.StartFromBeginning = attribute.StartFromBeginning;
-            //if (attribute.MaxItemsPerInvocation > 0)
-            //{
-            //    processorOptions.MaxItemCount = attribute.MaxItemsPerInvocation;
-            //}
+            ICosmosDBCassandraService cosmosDBCassandraService = _configProvider.GetService(contactPoint, user, password);
 
-            //TODO: for SQL API, adding Cosmos DB connection details was done here. 
-            //Here it is disabled as we add a Cassandra Cluster session in Trigger Listener instead
-            //It may be that we add back configuration details for Cassandra in this class
-
-
-            //ICosmosDBService monitoredCosmosDBService;
-            //ICosmosDBService leaseCosmosDBService;
-
-            //try
-            //{
-            //string triggerConnectionString = ResolveAttributeConnectionString(attribute);
-            //CosmosDBConnectionString triggerConnection = new CosmosDBConnectionString(triggerConnectionString);
-            //if (triggerConnection.ServiceEndpoint == null)
-            //{
-            //    throw new InvalidOperationException("The connection string for the monitored collection is in an invalid format, please use AccountEndpoint=XXXXXX;AccountKey=XXXXXX;.");
-            //}
-
-            //string leasesConnectionString = ResolveAttributeLeasesConnectionString(attribute);
-            //CosmosDBConnectionString leasesConnection = new CosmosDBConnectionString(leasesConnectionString);
-            //if (leasesConnection.ServiceEndpoint == null)
-            //{
-            //    throw new InvalidOperationException("The connection string for the leases collection is in an invalid format, please use AccountEndpoint=XXXXXX;AccountKey=XXXXXX;.");
-            //}
-
-            ////TODO: get rid of this
-            //documentCollectionLocation = new DocumentCollectionInfo
-            //{
-            //    Uri = triggerConnection.ServiceEndpoint,
-            //    MasterKey = triggerConnection.AuthKey,
-            //    DatabaseName = ResolveAttributeValue(attribute.DatabaseName),
-            //    CollectionName = ResolveAttributeValue(attribute.CollectionName)
-            //};
-
-            //documentCollectionLocation.ConnectionPolicy.UserAgentSuffix = CosmosDBTriggerUserAgentSuffix;
-
-            //if (desiredConnectionMode.HasValue)
-            //{
-            //    documentCollectionLocation.ConnectionPolicy.ConnectionMode = desiredConnectionMode.Value;
-            //}
-
-            //if (desiredConnectionProtocol.HasValue)
-            //{
-            //    documentCollectionLocation.ConnectionPolicy.ConnectionProtocol = desiredConnectionProtocol.Value;
-            //}
-
-            //leaseCollectionLocation = new DocumentCollectionInfo
-            //{
-            //    Uri = leasesConnection.ServiceEndpoint,
-            //    MasterKey = leasesConnection.AuthKey,
-            //    DatabaseName = ResolveAttributeValue(attribute.LeaseDatabaseName),
-            //    CollectionName = ResolveAttributeValue(attribute.LeaseCollectionName)
-            //};
-
-            //leaseCollectionLocation.ConnectionPolicy.UserAgentSuffix = CosmosDBTriggerUserAgentSuffix;
-
-            //if (desiredConnectionMode.HasValue)
-            //{
-            //    leaseCollectionLocation.ConnectionPolicy.ConnectionMode = desiredConnectionMode.Value;
-            //}
-
-            //if (desiredConnectionProtocol.HasValue)
-            //{
-            //    leaseCollectionLocation.ConnectionPolicy.ConnectionProtocol = desiredConnectionProtocol.Value;
-            //}
-
-            //string resolvedPreferredLocations = ResolveAttributeValue(attribute.PreferredLocations);
-            //foreach (var location in CosmosDBUtility.ParsePreferredLocations(resolvedPreferredLocations))
-            //{
-            //    documentCollectionLocation.ConnectionPolicy.PreferredLocations.Add(location);
-            //    leaseCollectionLocation.ConnectionPolicy.PreferredLocations.Add(location);
-            //}
-
-            //leaseCollectionLocation.ConnectionPolicy.UseMultipleWriteLocations = attribute.UseMultipleWriteLocations;
-
-            //if (string.IsNullOrEmpty(documentCollectionLocation.DatabaseName)
-            //    || string.IsNullOrEmpty(documentCollectionLocation.CollectionName)
-            //    || string.IsNullOrEmpty(leaseCollectionLocation.DatabaseName)
-            //    || string.IsNullOrEmpty(leaseCollectionLocation.CollectionName))
-            //{
-            //    throw new InvalidOperationException("Cannot establish database and collection values. If you are using environment and configuration values, please ensure these are correctly set.");
-            //}
-
-            //if (documentCollectionLocation.Uri.Equals(leaseCollectionLocation.Uri)
-            //    && documentCollectionLocation.DatabaseName.Equals(leaseCollectionLocation.DatabaseName)
-            //    && documentCollectionLocation.CollectionName.Equals(leaseCollectionLocation.CollectionName))
-            //{
-            //    throw new InvalidOperationException("The monitored collection cannot be the same as the collection storing the leases.");
-            //}
-
-            //monitoredCosmosDBService = _configProvider.GetService(triggerConnectionString, resolvedPreferredLocations, attribute.UseDefaultJsonSerialization);
-            //leaseCosmosDBService = _configProvider.GetService(leasesConnectionString, resolvedPreferredLocations, attribute.UseMultipleWriteLocations);
-
-            //if (attribute.CreateLeaseCollectionIfNotExists)
-            //{
-            //    await CreateLeaseCollectionIfNotExistsAsync(leaseCosmosDBService, leaseCollectionLocation.DatabaseName, leaseCollectionLocation.CollectionName, attribute.LeasesCollectionThroughput);
-            //}
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new InvalidOperationException(ex);
-            //    throw new InvalidOperationException(string.Format("Cannot create Collection Information for {0} in database {1} with lease {2} in database {3} : {4}", attribute.CollectionName, attribute.DatabaseName, attribute.LeaseCollectionName, attribute.LeaseDatabaseName, ex.Message), ex);
-            //}
-
-            //string CassandraConnectionParams = ResolveAttributeConnectionString(attribute);
-            //CosmosDBConnectionString cassandraConnectionParams = new CosmosDBConnectionString(CassandraConnectionParams);
-
-            return new CosmosDBCassandraTriggerBinding(
+            return Task.FromResult((ITriggerBinding)new CosmosDBCassandraTriggerBinding(
                 parameter,
-                attribute.KeyspaceName,
-                attribute.TableName,
-                Environment.GetEnvironmentVariable(attribute.ContactPoint),
-                Environment.GetEnvironmentVariable(attribute.User),
-                Environment.GetEnvironmentVariable(attribute.Password),
+                ResolveAttributeValue(attribute.KeyspaceName),
+                ResolveAttributeValue(attribute.TableName),
+                attribute.StartFromBeginning,
                 attribute.FeedPollDelay,
-                //documentCollectionLocation,
-                //leaseCollectionLocation,
-                //processorOptions,
-                //TODO: for SQL API, used monitoring and lease collection. Removed for Cassandra binding - need to revisit in future.
-                //monitoredCosmosDBService,
-                //leaseCosmosDBService,
-                _logger);
+                cosmosDBCassandraService,
+                _logger));
         }
 
-        internal static TimeSpan ResolveTimeSpanFromMilliseconds(string nameOfProperty, TimeSpan baseTimeSpan, int? attributeValue)
-        {
-            if (!attributeValue.HasValue || attributeValue.Value == 0)
-            {
-                return baseTimeSpan;
-            }
-
-            if (attributeValue.Value < 0)
-            {
-                throw new InvalidOperationException($"'{nameOfProperty}' must be greater than 0.");
-            }
-
-            return TimeSpan.FromMilliseconds(attributeValue.Value);
-        }
-
-        //private static async Task CreateLeaseCollectionIfNotExistsAsync(ICosmosDBService leaseCosmosDBService, string databaseName, string collectionName, int throughput)
-        //{
-        //    try
-        //    {
-        //        await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, null, throughput);
-        //    }
-        //    catch (DocumentClientException ex) when (ex.Message.Contains(SharedThroughputRequirementException))
-        //    {
-        //        await CosmosDBUtility.CreateDatabaseAndCollectionIfNotExistAsync(leaseCosmosDBService, databaseName, collectionName, LeaseCollectionRequiredPartitionKey, throughput);
-        //    }
-        //}
-
-
-        //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-
-        //private string ResolveAttributeConnectionString(CosmosDBCassandraTriggerAttribute attribute)
-        //{
-        //    string connectionString = ResolveConnectionString(attribute.ConnectionStringSetting, nameof(CosmosDBCassandraTriggerAttribute.ConnectionStringSetting));
-
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        ThrowMissingConnectionStringException();
-        //    }
-
-        //    return connectionString;
-        //}
-
-        //private string ResolveAttributeLeasesConnectionString(CosmosDBCassandraTriggerAttribute attribute)
-        //{
-        //    // If the lease connection string is not set, use the trigger's
-        //    string keyToResolve = attribute.LeaseConnectionStringSetting;
-        //    if (string.IsNullOrEmpty(keyToResolve))
-        //    {
-        //        keyToResolve = attribute.ConnectionStringSetting;
-        //    }
-
-        //    string connectionString = ResolveConnectionString(keyToResolve, nameof(CosmosDBCassandraTriggerAttribute.LeaseConnectionStringSetting));
-
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        ThrowMissingConnectionStringException(true);
-        //    }
-
-        //    return connectionString;
-        //}
-
-        //private void ThrowMissingConnectionStringException(bool isLeaseConnectionString = false)
-        //{
-        //    string attributeProperty = isLeaseConnectionString ?
-        //        $"{nameof(CosmosDBCassandraTriggerAttribute)}.{nameof(CosmosDBCassandraTriggerAttribute.LeaseConnectionStringSetting)}" :
-        //        $"{nameof(CosmosDBCassandraTriggerAttribute)}.{nameof(CosmosDBCassandraTriggerAttribute.ConnectionStringSetting)}";
-
-        //    string optionsProperty = $"{nameof(CosmosDBOptions)}.{nameof(CosmosDBOptions.ConnectionString)}";
-
-        //    string leaseString = isLeaseConnectionString ? "lease " : string.Empty;
-
-        //    throw new InvalidOperationException(
-        //        $"The CosmosDBTrigger {leaseString}connection string must be set either via a '{Constants.DefaultConnectionStringName}' configuration connection string, via the {attributeProperty} property or via {optionsProperty}.");
-        //}
-
-        internal string ResolveConnectionString(string unresolvedConnectionString, string propertyName)
+        internal string ResolveConfigurationValue(string unresolvedConnectionString, string propertyName)
         {
             // First, resolve the string.
             if (!string.IsNullOrEmpty(unresolvedConnectionString))
@@ -281,50 +80,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 return resolvedString;
             }
 
-            // If that didn't exist, fall back to options.
-            return _options.ConnectionString;
+            throw new ArgumentNullException(propertyName);
         }
 
-        //private ChangeFeedProcessorOptions BuildProcessorOptions(CosmosDBCassandraTriggerAttribute attribute)
-        //{
-        //    ChangeFeedHostOptions leasesOptions = _options.LeaseOptions;
-
-        //    ChangeFeedProcessorOptions processorOptions = new ChangeFeedProcessorOptions
-        //    {
-        //        LeasePrefix = ResolveAttributeValue(attribute.LeaseCollectionPrefix) ?? leasesOptions.LeasePrefix,
-        //        FeedPollDelay = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.FeedPollDelay), leasesOptions.FeedPollDelay, attribute.FeedPollDelay),
-        //        LeaseAcquireInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseAcquireInterval), leasesOptions.LeaseAcquireInterval, attribute.LeaseAcquireInterval),
-        //        LeaseExpirationInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseExpirationInterval), leasesOptions.LeaseExpirationInterval, attribute.LeaseExpirationInterval),
-        //        LeaseRenewInterval = ResolveTimeSpanFromMilliseconds(nameof(CosmosDBCassandraTriggerAttribute.LeaseRenewInterval), leasesOptions.LeaseRenewInterval, attribute.LeaseRenewInterval),
-        //        CheckpointFrequency = leasesOptions.CheckpointFrequency ?? new CheckpointFrequency()
-        //    };
-
-        //    if (attribute.CheckpointInterval > 0)
-        //    {
-        //        processorOptions.CheckpointFrequency.TimeInterval = TimeSpan.FromMilliseconds(attribute.CheckpointInterval);
-        //    }
-
-        //    if (attribute.CheckpointDocumentCount > 0)
-        //    {
-        //        processorOptions.CheckpointFrequency.ProcessedDocumentCount = attribute.CheckpointDocumentCount;
-        //    }
-
-        //    return processorOptions;
-        //}
-
-        public static bool ValidateServerCertificate(
-            object sender,
-            X509Certificate certificate,
-            X509Chain chain,
-            SslPolicyErrors sslPolicyErrors)
-        {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-                return true;
-
-            Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-            // Do not allow this client to communicate with unauthenticated servers.
-            return false;
-        }
         private string ResolveAttributeValue(string attributeValue)
         {
             return _nameResolver.ResolveWholeString(attributeValue) ?? attributeValue;

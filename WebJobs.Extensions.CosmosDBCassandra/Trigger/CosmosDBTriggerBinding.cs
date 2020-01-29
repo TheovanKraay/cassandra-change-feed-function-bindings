@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Cassandra;
-//using Microsoft.Azure.Documents.ChangeFeedProcessor;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Azure.WebJobs.Host.Protocols;
@@ -21,68 +20,35 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly ParameterInfo _parameter;
         private readonly string _keyspace;
         private readonly string _table;
-        private readonly string _contactpoint;
-        private readonly string _user;
-        private readonly string _password;
         private readonly int _feedpolldelay;
-        //TODO: Removed below for Cassandra API binding
-        //private readonly DocumentCollectionInfo _documentCollectionLocation;
-        //private readonly DocumentCollectionInfo _leaseCollectionLocation;
-        //private readonly ChangeFeedProcessorOptions _processorOptions;
+        private readonly bool _startFromBeginning;
+        private readonly ICosmosDBCassandraService _cosmosDBCassandraService;
         private readonly ILogger _logger;
         private readonly IReadOnlyDictionary<string, Type> _emptyBindingContract = new Dictionary<string, Type>();
         private readonly IReadOnlyDictionary<string, object> _emptyBindingData = new Dictionary<string, object>();
 
-        //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-        //private readonly ICosmosDBService _monitoredCosmosDBService;
-        //private readonly ICosmosDBService _leasesCosmosDBService;
 
         public CosmosDBCassandraTriggerBinding(ParameterInfo parameter,
             string keyspace,
             string table,
-            string contactpoint, 
-            string user, 
-            string password,
+            bool startFromBeginning,
             int feedpolldelay,
-            //TODO: Removed below for Cassandra API binding
-            //DocumentCollectionInfo documentCollectionLocation,
-            //DocumentCollectionInfo leaseCollectionLocation,
-            //ChangeFeedProcessorOptions processorOptions,
-            //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-            //ICosmosDBService monitoredCosmosDBService,
-            //ICosmosDBService leasesCosmosDBService,
+            ICosmosDBCassandraService cosmosDBCassandraService,
             ILogger logger)
         {
             _keyspace = keyspace;
             _table = table;
-            _contactpoint = contactpoint;
-            _user = user;
-            _password = password;
-            _feedpolldelay = feedpolldelay;
-
-            //TODO: Removed below for Cassandra API binding
-            //_documentCollectionLocation = documentCollectionLocation;
-            //_leaseCollectionLocation = leaseCollectionLocation;
-
-            //_processorOptions = processorOptions;
+            _cosmosDBCassandraService = cosmosDBCassandraService;
             _parameter = parameter;
+            _startFromBeginning = startFromBeginning;
+            _feedpolldelay = feedpolldelay;
             _logger = logger;
-
-            //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-            //_monitoredCosmosDBService = monitoredCosmosDBService;
-            //_leasesCosmosDBService = leasesCosmosDBService;
         }
 
         /// <summary>
         /// Gets the type of the value the Trigger receives from the Executor.
         /// </summary>
         public Type TriggerValueType => typeof(IReadOnlyList<Row>);
-
-        //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-        //internal DocumentCollectionInfo DocumentCollectionLocation => _documentCollectionLocation;
-        //internal DocumentCollectionInfo LeaseCollectionLocation => _leaseCollectionLocation;
-
-        //internal ChangeFeedProcessorOptions ChangeFeedProcessorOptions => _processorOptions;
 
         public IReadOnlyDictionary<string, Type> BindingDataContract
         {
@@ -108,17 +74,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 context.Descriptor.Id,
                 this._keyspace,
                 this._table,
-                this._contactpoint,
-                this._user,
-                this._password,
+                this._startFromBeginning,
                 this._feedpolldelay,
-                //TODO: Removed below for Cassandra API binding
-                //this._documentCollectionLocation,
-                //this._leaseCollectionLocation,
-                //this._processorOptions,
-                //TODO: Removed below for Cassandra API binding - may need to revisit in future.
-                //this._monitoredCosmosDBService,
-                //this._leasesCosmosDBService,
+                this._cosmosDBCassandraService,
                 this._logger));
         }
 
@@ -128,13 +86,12 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         /// <returns></returns>
         public ParameterDescriptor ToParameterDescriptor()
         {
-            return new CosmosDBTriggerParameterDescriptor
+            return new CosmosDBCassandraTriggerParameterDescriptor
             {
                 Name = _parameter.Name,
-                Type = CosmosDBTriggerConstants.TriggerName,
-
-                //TODO: Removed below for Cassandra API binding
-                //CollectionName = this._documentCollectionLocation.CollectionName
+                Type = CosmosDBCassandraTriggerConstants.TriggerName,
+                KeyspaceName = this._keyspace,
+                TableName = this._table
             };
         }
 

@@ -5,6 +5,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
     public static class Constants
     {
-        public const string DefaultConnectionStringName = "CosmosDB";
+        public const string DefaultConnectionStringName = "CosmosDBCassandra";
     }
 }

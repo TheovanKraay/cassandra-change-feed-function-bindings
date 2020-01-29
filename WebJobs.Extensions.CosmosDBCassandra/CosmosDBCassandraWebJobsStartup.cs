@@ -5,17 +5,16 @@ using Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Hosting;
 
-[assembly: WebJobsStartup(typeof(CosmosDBWebJobsStartup))]
+[assembly: WebJobsStartup(typeof(CosmosDBCassandraWebJobsStartup))]
 
 namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 {
-    public class CosmosDBWebJobsStartup : IWebJobsStartup
+    public class CosmosDBCassandraWebJobsStartup : IWebJobsStartup
     {
         public void Configure(IWebJobsBuilder builder)
         {
             
-            builder.AddCosmosDB();
-
+            builder.AddCosmosDBCassandra();
         }
     }
 }

@@ -12,13 +12,13 @@ namespace Microsoft.Extensions.Hosting
     /// <summary>
     /// Extension methods for CosmosDB integration.
     /// </summary>
-    public static class CosmosDBWebJobsBuilderExtensions
+    public static class CosmosDBCassandraWebJobsBuilderExtensions
     {
         /// <summary>
         /// Adds the CosmosDB extension to the provided <see cref="IWebJobsBuilder"/>.
         /// </summary>
         /// <param name="builder">The <see cref="IWebJobsBuilder"/> to configure.</param>
-        public static IWebJobsBuilder AddCosmosDB(this IWebJobsBuilder builder)
+        public static IWebJobsBuilder AddCosmosDBCassandra(this IWebJobsBuilder builder)
         {
             if (builder == null)
             {
@@ -26,25 +26,26 @@ namespace Microsoft.Extensions.Hosting
             }
 
             builder.AddExtension<CosmosDBExtensionConfigProvider>()
-                .ConfigureOptions<CosmosDBOptions>((config, path, options) =>
+                .ConfigureOptions<CosmosDBCassandraOptions>((config, path, options) =>
                 {
+                    // TODO: Add to Options the Cassandra connection details
                     options.ConnectionString = config.GetConnectionString(Constants.DefaultConnectionStringName);
 
                     IConfigurationSection section = config.GetSection(path);
                     section.Bind(options);
                 });
 
-            //builder.Services.AddSingleton<ICosmosDBServiceFactory, DefaultCosmosDBServiceFactory>();
+            builder.Services.AddSingleton<ICosmosDBCassandraServiceFactory, DefaultCosmosDBCassandraServiceFactory>();
 
             return builder;
         }
 
-        /// <summary>
-        /// Adds the CosmosDB extension to the provided <see cref="IWebJobsBuilder"/>.
-        /// </summary>
-        /// <param name="builder">The <see cref="IWebJobsBuilder"/> to configure.</param>
-        /// <param name="configure">An <see cref="Action{CosmosDBOptions}"/> to configure the provided <see cref="CosmosDBOptions"/>.</param>
-        public static IWebJobsBuilder AddCosmosDB(this IWebJobsBuilder builder, Action<CosmosDBOptions> configure)
+        /// <summary>	
+        /// Adds the CosmosDB extension to the provided <see cref="IWebJobsBuilder"/>.	
+        /// </summary>	
+        /// <param name="builder">The <see cref="IWebJobsBuilder"/> to configure.</param>	
+        /// <param name="configure">An <see cref="Action{CosmosDBCassandraOptions}"/> to configure the provided <see cref="CosmosDBCassandraOptions"/>.</param>	
+        public static IWebJobsBuilder AddCosmosDBCassandra(this IWebJobsBuilder builder, Action<CosmosDBCassandraOptions> configure)
         {
             if (builder == null)
             {
@@ -56,10 +57,12 @@ namespace Microsoft.Extensions.Hosting
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            builder.AddCosmosDB();
+            builder.AddCosmosDBCassandra();
             builder.Services.Configure(configure);
 
-            return builder;
+
+            return builder; 
         }
     }
+
 }

@@ -10,16 +10,21 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
     /// <summary>
     /// Trigger parameter descriptor for [CosmosDBTrigger]
     /// </summary>
-    internal class CosmosDBTriggerParameterDescriptor : TriggerParameterDescriptor
+    internal class CosmosDBCassandraTriggerParameterDescriptor : TriggerParameterDescriptor
     {
         /// <summary>
-        /// Name of the collection being monitored
+        /// Name of the keyspace being monitored
         /// </summary>
-        public string CollectionName { get; set; }
+        public string KeyspaceName { get; set; }
+
+        /// <summary>
+        /// Name of the table being monitored
+        /// </summary>
+        public string TableName { get; set; }
 
         public override string GetTriggerReason(IDictionary<string, string> arguments)
         {
-            return string.Format(CosmosDBTriggerConstants.TriggerDescription, this.CollectionName, DateTime.UtcNow.ToString("o"));
+            return string.Format(CosmosDBCassandraTriggerConstants.TriggerDescription, this.KeyspaceName, this.TableName, DateTime.UtcNow.ToString("o"));
         }
     }
 }
