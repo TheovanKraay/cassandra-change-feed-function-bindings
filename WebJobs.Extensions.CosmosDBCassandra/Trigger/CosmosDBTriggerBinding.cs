@@ -20,6 +20,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly ParameterInfo _parameter;
         private readonly string _keyspace;
         private readonly string _table;
+        private readonly int _feedpolldelay;
+        private readonly bool _startFromBeginning;
         private readonly ICosmosDBCassandraService _cosmosDBCassandraService;
         private readonly ILogger _logger;
         private readonly IReadOnlyDictionary<string, Type> _emptyBindingContract = new Dictionary<string, Type>();
@@ -29,6 +31,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         public CosmosDBCassandraTriggerBinding(ParameterInfo parameter,
             string keyspace,
             string table,
+            bool startFromBeginning,
+            int feedpolldelay,
             ICosmosDBCassandraService cosmosDBCassandraService,
             ILogger logger)
         {
@@ -36,6 +40,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             _table = table;
             _cosmosDBCassandraService = cosmosDBCassandraService;
             _parameter = parameter;
+            _startFromBeginning = startFromBeginning;
+            _feedpolldelay = feedpolldelay;
             _logger = logger;
         }
 
@@ -68,6 +74,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 context.Descriptor.Id,
                 this._keyspace,
                 this._table,
+                this._startFromBeginning,
+                this._feedpolldelay,
                 this._cosmosDBCassandraService,
                 this._logger));
         }

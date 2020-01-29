@@ -59,6 +59,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 parameter,
                 ResolveAttributeValue(attribute.KeyspaceName),
                 ResolveAttributeValue(attribute.TableName),
+                attribute.StartFromBeginning,
+                attribute.FeedPollDelay,
                 cosmosDBCassandraService,
                 _logger));
         }

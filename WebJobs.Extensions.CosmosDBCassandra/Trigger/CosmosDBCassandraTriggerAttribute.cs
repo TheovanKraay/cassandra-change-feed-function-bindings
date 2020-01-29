@@ -7,7 +7,7 @@ using System;
 namespace Microsoft.Azure.WebJobs
 {
     /// <summary>
-    /// Defines the [CosmosDBTrigger] attribute
+    /// Defines the [CosmosDBCassandraTrigger] attribute
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1019:DefineAccessorsForAttributeArguments")]
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -54,6 +54,18 @@ namespace Microsoft.Azure.WebJobs
         /// </summary>
         [AppSetting]
         public string Password { get; set; }
+
+        /// <summary>
+        /// Optional.
+        /// Customizes the delay in milliseconds in between polling a partition for new changes on the feed, after all current changes are drained.  Default is 5000 (5 seconds).
+        /// </summary>
+        public int FeedPollDelay { get; set; }
+
+        /// <summary>
+        /// Optional.
+        /// Gets or sets whether change feed in the Azure Cosmos DB service should start from beginning (true) or from current (false). By default it's start from current (false).
+        /// </summary>
+        public bool StartFromBeginning { get; set; } = false;
 
 
         /// <summary>

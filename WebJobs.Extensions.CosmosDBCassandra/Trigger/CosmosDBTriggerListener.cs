@@ -23,6 +23,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly string _functionId;
         private readonly string _keyspace;
         private readonly string _table;
+        private readonly int _feedpolldelay;
+        private readonly bool _startFromBeginning;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private static ISession session;
         
@@ -31,6 +33,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             string functionId,
             string keyspace,
             string table,
+            bool startFromBeginning,
+            int feedpolldelay,
             ICosmosDBCassandraService cosmosDBCassandraService,
             ILogger logger)
         {
@@ -39,6 +43,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             this._functionId = functionId;
             this._keyspace = keyspace;
             this._table = table;
+            this._startFromBeginning = startFromBeginning;
+            this._feedpolldelay = feedpolldelay;
             this._cosmosDBCassandraService = cosmosDBCassandraService;
             this._hostName = Guid.NewGuid().ToString();
         }
@@ -60,7 +66,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
 
             session = cluster.Connect(_keyspace);
             //set initial start time for pulling the change feed
-            DateTime timeBegin = DateTime.UtcNow;
+            
+            DateTime timeBegin = this._startFromBeginning ? DateTime.MinValue.ToUniversalTime() : DateTime.UtcNow;
 
             //initialise variable to store the continuation token
             byte[] pageState = null;
@@ -88,10 +95,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                     }
 
                     TimeSpan wait = new TimeSpan(5000);
-                    //if (_processorOptions.FeedPollDelay != null)
-                    //{
-                    //    wait = _processorOptions.FeedPollDelay;
-                    //}
+                    if (_feedpolldelay != 0)
+                    {
+                        wait = new TimeSpan(_feedpolldelay);
+                    }
                     await Task.Delay(wait, cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException e) 

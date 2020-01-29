@@ -14,7 +14,7 @@ namespace FunctionApp1
             tableName: "table1",
             ContactPoint = "ContactPoint",
             User = "User",
-            Password = "Password")]IReadOnlyList<Row> input, ILogger log)
+            Password = "Password")]IReadOnlyList<Row> input)
         {
             if (input != null)
             {
