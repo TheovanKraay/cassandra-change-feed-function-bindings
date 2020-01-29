@@ -23,7 +23,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly string _functionId;
         private readonly string _keyspace;
         private readonly string _table;
-        private readonly int _feedpolldelay;
+        private readonly TimeSpan _defaultTimeSpan;
         private readonly bool _startFromBeginning;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private static ISession session;
@@ -44,7 +44,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             this._keyspace = keyspace;
             this._table = table;
             this._startFromBeginning = startFromBeginning;
-            this._feedpolldelay = feedpolldelay;
+            this._defaultTimeSpan = feedpolldelay > 0 ? TimeSpan.FromMilliseconds(feedpolldelay) : TimeSpan.FromMilliseconds(5000);
             this._cosmosDBCassandraService = cosmosDBCassandraService;
             this._hostName = Guid.NewGuid().ToString();
         }
@@ -85,20 +85,18 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                     }                   
                     RowSet rowSet = session.Execute(changeFeedQueryStatement);
                     pageState = rowSet.PagingState;
+
+                    TimeSpan wait = _defaultTimeSpan;
                     if (rowSet.IsFullyFetched) {
                         IReadOnlyList<Row> rowList = rowSet.ToList();
                         CqlColumn[] columns = rowSet.Columns;
                         if (rowList.Count != 0)
                         {
                             await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = rowList }, cancellationToken);
+                            wait = TimeSpan.Zero; // If there were changes, we want to capture the next batch right away with no delay
                         }
                     }
-
-                    TimeSpan wait = new TimeSpan(5000);
-                    if (_feedpolldelay != 0)
-                    {
-                        wait = new TimeSpan(_feedpolldelay);
-                    }
+                    
                     await Task.Delay(wait, cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException e) 
