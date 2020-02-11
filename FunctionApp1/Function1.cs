@@ -1,6 +1,5 @@
-using Cassandra;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -13,8 +12,9 @@ namespace FunctionApp1
             keyspaceName: "data",
             tableName: "table1",
             ContactPoint = "ContactPoint",
+            FeedPollDelay = 5000,
             User = "User",
-            Password = "Password")]IReadOnlyList<Row> input)
+            Password = "Password")]IReadOnlyList<JArray> input)
         {
             if (input != null)
             {
@@ -22,10 +22,7 @@ namespace FunctionApp1
                 {
                     for (int i = 0; i < input.Count; i++)
                     {
-                        string name = input[i].GetValue<string>("name");
-                        string email = input[i].GetValue<string>("email");
-                        Console.WriteLine("name: " + name); 
-                        Console.WriteLine("email: " + email);
+                        Console.WriteLine("Cassandra row: " +input[i].ToString());
                     }
                 }
             }

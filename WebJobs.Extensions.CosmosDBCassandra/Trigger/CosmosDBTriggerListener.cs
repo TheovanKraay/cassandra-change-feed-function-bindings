@@ -5,6 +5,7 @@ using Cassandra;
 using Microsoft.Azure.WebJobs.Host.Executors;
 using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -87,16 +88,34 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                     pageState = rowSet.PagingState;
 
                     TimeSpan wait = _defaultTimeSpan;
-                    if (rowSet.IsFullyFetched) {
-                        IReadOnlyList<Row> rowList = rowSet.ToList();
+                    if (rowSet.IsFullyFetched)
+                    {
+                        List<Row> rowList = rowSet.ToList();
                         CqlColumn[] columns = rowSet.Columns;
                         if (rowList.Count != 0)
                         {
-                            await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = rowList }, cancellationToken);
+                            //convert Cassandra resultset to JArray
+                            List<JArray> rows = new List<JArray>();
+                            for (int i = 0; i < rowList.Count; i++)
+                            {
+                                JArray row = new JArray();
+                                JObject jcolumns = new JObject();
+                                foreach (CqlColumn col in columns)
+                                {
+                                    //add column names and values extracted from rowList to JObject
+                                    jcolumns.Add(new JProperty(col.Name, rowList[i].GetValue<dynamic>(col.Name)));                                    
+                                }
+                                //add the JObject to the JArray
+                                row.Add(jcolumns);
+
+                                //add the JArray to the JArray List
+                                rows.Add(row);
+                            }
+                            await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = rows }, cancellationToken);
                             wait = TimeSpan.Zero; // If there were changes, we want to capture the next batch right away with no delay
                         }
                     }
-                    
+
                     await Task.Delay(wait, cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException e) 
