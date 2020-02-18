@@ -26,7 +26,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly CosmosDBCassandraOptions _options;
         private readonly ILoggerFactory _loggerFactory;
 
-        public CosmosDBCassandraExtensionConfigProvider(IOptions<CosmosDBCassandraOptions> options, ICosmosDBCassandraServiceFactory cosmosDBServiceFactory, IConfiguration configuration, INameResolver nameResolver, ILoggerFactory loggerFactory)
+        public CosmosDBCassandraExtensionConfigProvider(IOptions<CosmosDBCassandraOptions> options, ICosmosDBCassandraServiceFactory cosmosDBServiceFactory,  IConfiguration configuration, INameResolver nameResolver, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _cosmosDBServiceFactory = cosmosDBServiceFactory;

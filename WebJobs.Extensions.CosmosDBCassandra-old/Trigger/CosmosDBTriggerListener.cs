@@ -28,7 +28,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         private readonly bool _startFromBeginning;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private static ISession session;
-
+        
 
         public CosmosDBTriggerListener(ITriggeredFunctionExecutor executor,
             string functionId,
@@ -61,14 +61,13 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
         }
 
 
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
+        public async Task StartAsync(CancellationToken cancellationToken) {
 
             Cluster cluster = _cosmosDBCassandraService.GetCluster();
 
             session = cluster.Connect(_keyspace);
             //set initial start time for pulling the change feed
-
+            
             DateTime timeBegin = this._startFromBeginning ? DateTime.MinValue.ToUniversalTime() : DateTime.UtcNow;
 
             //initialise variable to store the continuation token
@@ -80,11 +79,11 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                 try
                 {
                     IStatement changeFeedQueryStatement = new SimpleStatement(
-                    $"SELECT * FROM " + _keyspace + "." + _table + $" where COSMOS_CHANGEFEED_START_TIME() = '{timeBegin.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture)}'");
+                    $"SELECT * FROM "+_keyspace+"."+_table+$" where COSMOS_CHANGEFEED_START_TIME() = '{timeBegin.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture)}'");
                     if (pageState != null)
                     {
                         changeFeedQueryStatement = changeFeedQueryStatement.SetPagingState(pageState);
-                    }
+                    }                   
                     RowSet rowSet = session.Execute(changeFeedQueryStatement);
                     pageState = rowSet.PagingState;
 
@@ -104,28 +103,25 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
                                 foreach (CqlColumn col in columns)
                                 {
                                     //add column names and values extracted from rowList to JObject
-                                    jcolumns.Add(new JProperty(col.Name, rowList[i].GetValue<dynamic>(col.Name)));
-                                    
+                                    jcolumns.Add(new JProperty(col.Name, rowList[i].GetValue<dynamic>(col.Name)));                                    
                                 }
                                 //add the JObject to the JArray
                                 row.Add(jcolumns);
 
                                 //add the JArray to the JArray List
                                 rows.Add(row);
-                                //_logger.LogInformation("row: " + row.ToString());
                             }
-                            _logger.LogInformation("processing change...");
                             await _executor.TryExecuteAsync(new TriggeredFunctionData() { TriggerValue = rows }, cancellationToken);
-                            
                             wait = TimeSpan.Zero; // If there were changes, we want to capture the next batch right away with no delay
                         }
                     }
+
                     await Task.Delay(wait, cancellationTokenSource.Token);
                 }
-                catch (TaskCanceledException e)
+                catch (TaskCanceledException e) 
                 {
                     _logger.LogWarning(e, "Task cancelled");
-                }
+                } 
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Error on change feed cycle");
@@ -138,6 +134,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.CosmosDBCassandra
             cancellationTokenSource.Cancel();
             return Task.CompletedTask;
         }
-
+        
     }
 }
