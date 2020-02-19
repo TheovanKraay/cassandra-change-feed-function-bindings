@@ -1,0 +1,17 @@
+{
+  "bindings": [
+    {
+      "type": "CosmosDBCassandraTrigger",
+      "contactPoint": "ContactPoint",
+      "feedPollDelay": 5000,
+      "user": "User",
+      "password": "Password",
+      "startFromBeginning": false,
+      "keyspaceName": "data",
+      "tableName": "table1",
+      "name": "input"
+    }
+  ],  
+  "scriptFile" : "..\\target\\azure-functions\\CassandraJava-1582116867231\\CassandraJava-1.0-SNAPSHOT.jar",
+  "entryPoint" : "com.function.Function.run"
+}
