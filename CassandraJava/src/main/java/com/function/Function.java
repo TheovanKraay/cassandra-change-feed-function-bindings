@@ -17,16 +17,7 @@ public class Function {
      */
     @FunctionName("HttpTrigger-Java")
     public void cosmosDbProcessor(
-            @CosmosDBCassandraTrigger(
-                contactPoint = "ContactPoint", 
-                feedPollDelay = 5000, 
-                user = "User", 
-                password = "Password", 
-                startFromBeginning = true, 
-                keyspaceName = "data",
-                tableName = "table1") 
                 String[] items, final ExecutionContext context) 
-                
                 {
                 for (String string : items) {
                     System.out.println(string);
