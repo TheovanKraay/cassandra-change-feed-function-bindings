@@ -13,5 +13,5 @@
     }
   ],  
   "scriptFile" : "..\\target\\azure-functions\\CassandraJava-1582116867231\\CassandraJava-1.0-SNAPSHOT.jar",
-  "entryPoint" : "com.function.Function.run"
+  "entryPoint" : "com.function.Function.cosmosDbProcessor"
 }
